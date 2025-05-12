@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+I want the ui design of the create and edit forms to be like [preventive-maintenance-form.tsx](mdc:components/dashboard/preventive-maintenance/preventive-maintenance-form.tsx) and I want the design of the pages that has table in it to look like [page.tsx](mdc:app/dashboard/[companyId]/preventive-maintenance/page.tsx) and the table design should look like [preventive-maintenance-table.tsx](mdc:components/dashboard/preventive-maintenance/preventive-maintenance-table.tsx)

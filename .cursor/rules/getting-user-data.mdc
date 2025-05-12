@@ -1,0 +1,18 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+when you want to get the current logged in user data use the isAuthenticated function in [auth.ts](mdc:lib/auth.ts) 
+the payload type is like this
+```tsx
+ const tokenPayload = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      companyId: user.companyId,
+      companyName: user.company.name
+    }
+
+
+```

@@ -1,0 +1,221 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WorkOrderPriority {
+  none
+  low
+  medium
+  high
+}
+
+enum WorkOrderStatus {
+  pending
+  inProgress
+  completed
+  cancelled
+}
+
+enum MaintenancePriority {
+  low
+  medium
+  high
+  critical
+}
+
+enum ScheduleType {
+  regularInterval
+  afterCompletion
+}
+
+enum TimeUnit {
+  day
+  week
+  month
+  year
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+  preventiveMaintenances PreventiveMaintenance[]
+  assets    Asset[]
+  workOrders WorkOrder[]
+  parts     Part[]
+  manufacturers Manufacturer[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdMaintenances PreventiveMaintenance[] @relation("CreatedBy")
+  assignedWorkOrders WorkOrder[] @relation("WorkOrderAssignedTo")
+  defaultAssignedPMs PreventiveMaintenance[] @relation("PMDefaultAssignedTo")
+  
+  // Asset relations
+  primaryAssets Asset[] @relation("PrimaryWorker")
+  additionalAssets Asset[] @relation("AdditionalWorkers")
+}
+
+model Manufacturer {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String
+  
+  assets      Asset[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Asset {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  
+  // New fields
+  image       String?
+  model       String?
+  serialNumber String?
+  barcode     String?
+  purchasePrice Int?
+  purchaseDate DateTime?
+  residualValue Int?
+  usefulLife  Int?
+  usefulLifeUnit TimeUnit?
+  placedInServiceDate DateTime?
+  warrantyExpirationDate DateTime?
+  additionalInformation String?
+  
+  // Relations
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String
+  
+  // New relations
+  manufacturer Manufacturer? @relation(fields: [manufacturerId], references: [id])
+  manufacturerId String?
+  
+  worker      User?      @relation("PrimaryWorker", fields: [workerId], references: [id])
+  workerId    String?
+  
+  additionalWorkers User[] @relation("AdditionalWorkers")
+  
+  parts       Part[]     @relation("AssetParts")
+  
+  maintenances PreventiveMaintenance[]
+  workOrders WorkOrder[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model PreventiveMaintenance {
+  id          String    @id @default(cuid()) // Unique identifier for the PM
+  title       String    // Title or name of the maintenance task
+  description String?   // Detailed description of what the maintenance involves
+  
+  // Schedule fields
+  scheduleType ScheduleType @default(regularInterval) // Whether maintenance occurs at regular intervals or after previous completion
+  frequency   Int       // How often maintenance occurs (e.g., every 2 weeks, every 3 months)
+  timeUnit    TimeUnit  @default(day) // Unit of time for frequency (day, week, month, year)
+  
+  // Work Order creation settings
+  createWOsDaysBeforeDue Int? // How many days before the due date to create work orders
+  
+  // Default Work Order fields
+  workOrderTitle       String?   // Default title for created work orders
+  workOrderDescription String?   // Default description for created work orders
+  workOrderPriority    WorkOrderPriority? // Default priority for created work orders
+  
+  startDate   DateTime  // When this maintenance schedule begins
+  endDate     DateTime? // When this maintenance schedule ends (optional)
+  nextDueDate DateTime  // When the next maintenance is due
+  status      String    @default("pending") // Current status of the maintenance (pending, in-progress, completed, overdue)
+  
+  createdBy   User      @relation("CreatedBy", fields: [createdById], references: [id]) // User who created the maintenance
+  createdById String    // Foreign key to the creating user
+
+  // Default assigned user for work orders
+  assignedTo  User?     @relation("PMDefaultAssignedTo", fields: [assignedToId], references: [id])
+  assignedToId String?  // Foreign key to the default assigned user
+
+  asset       Asset?    @relation(fields: [assetId], references: [id]) // Asset this maintenance is for
+  assetId     String?   // Foreign key to the asset
+
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade) // Company that owns this maintenance
+  companyId   String    // Foreign key to the company
+
+  workOrders  WorkOrder[] // Associated work orders (one-to-many relationship)
+
+  createdAt   DateTime  @default(now()) // When this record was created
+  updatedAt   DateTime  @updatedAt // When this record was last updated
+}
+
+model WorkOrder {
+  id          String    @id @default(cuid()) // Unique identifier for the work order
+  title       String    // Title or name of the work order
+  description String?   // Detailed description of what the work order involves
+  status      WorkOrderStatus @default(pending) // Current status of the work order (pending, inProgress, completed, cancelled)
+  priority    WorkOrderPriority @default(medium) // Priority level of the work order (none, low, medium, high)
+  dueDate     DateTime? // When the work order should be completed by
+  
+  // Relations
+  preventiveMaintenance PreventiveMaintenance @relation(fields: [preventiveMaintenanceId], references: [id]) // Associated preventive maintenance plan
+  preventiveMaintenanceId String // Foreign key to the preventive maintenance (removing @unique for one-to-many)
+  
+  assignedTo  User?     @relation("WorkOrderAssignedTo", fields: [assignedToId], references: [id]) // User assigned to complete the work order
+  assignedToId String?  // Foreign key to the assigned user
+  
+  asset       Asset?    @relation(fields: [assetId], references: [id]) // Asset this work order is for
+  assetId     String?   // Foreign key to the asset
+  
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade) // Company that owns this work order
+  companyId   String    // Foreign key to the company
+  
+  createdAt   DateTime  @default(now()) // When this work order was created
+  updatedAt   DateTime  @updatedAt // When this work order was last updated
+}
+
+model Part {
+  id        String   @id @default(cuid())
+  name      String   // Renamed from 'title' to 'name'
+  partNumber String?
+  description String?
+  imageUrl   String?
+  isNoneStock Boolean @default(false)
+  isCritical Boolean @default(false)
+  minimumQuantity Int? // Minimum quantity to maintain in inventory
+  additionalInformation String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+  
+  // Asset relation
+  assets    Asset[]  @relation("AssetParts")
+}

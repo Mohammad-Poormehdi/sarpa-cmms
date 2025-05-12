@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+everytime you want to install an npm package first check if it already installed or not

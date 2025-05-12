@@ -1,0 +1,10 @@
+# S3/MinIO Configuration
+# Copy these variables to your .env.local file
+S3_ENDPOINT=http://your-minio-server:9000
+S3_ACCESS_KEY=your-access-key
+S3_SECRET_KEY=your-secret-key
+S3_BUCKET_NAME=sarpa-assets
+AWS_REGION=us-east-1
+
+# Note: All files will be stored in a 'sarpa-cmms' folder within the bucket
+# This folder structure is defined in lib/s3-utils.ts with the FOLDER_PREFIX constant 

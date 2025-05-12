@@ -1,0 +1,43 @@
+# .dockerignore
+
+# Node modules and dependencies
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Development environment files
+.env*.local
+.env.development
+.env.test
+
+# Next.js build output
+.next
+out
+
+# Version control system files
+.git
+.gitignore
+
+# Development tools
+.vscode
+.idea
+*.swp
+*.swo
+
+# Docker related
+Dockerfile
+.dockerignore
+
+# Logs and databases
+logs
+*.log
+*.sqlite
+
+# Testing
+coverage
+.nyc_output
+
+# Misc
+.DS_Store
+.cursor 
