@@ -16,8 +16,9 @@ export async function GET(
   }
 
   try {
-    const key = params.key;
-    
+
+    let  key = params.key;
+
     if (!key) {
       return NextResponse.json(
         { error: "File key is required" },
