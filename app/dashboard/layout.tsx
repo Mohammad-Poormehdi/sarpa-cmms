@@ -4,13 +4,22 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
+import { redirect } from "next/navigation"
+
+export const dynamic = "force-dynamic";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { name, email } = await isAuthenticated()
+  const user = await isAuthenticated()
+
+  if (!user) {
+    redirect("/login")
+  }
+
+  const { name, email } = user
 
   return (
     <div dir="rtl" >
