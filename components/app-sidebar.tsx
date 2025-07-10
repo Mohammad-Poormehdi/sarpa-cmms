@@ -73,7 +73,7 @@ const GradientIcon = ({
   )
 }
 
-export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typeof Sidebar> & { side?: "left" | "right" }) {
+export function AppSidebar({ side = "left", name, email, ...props }: React.ComponentProps<typeof Sidebar> & { side?: "left" | "right", name: string, email: string }) {
   const params = useParams()
   const pathname = usePathname()
   const companyId = params.companyId as string
@@ -135,8 +135,8 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
 
   // User data
   const userData = {
-    name: "جان دو",
-    email: "john@example.com",
+    name: name,
+    email: email,
     avatar: "/avatars/john-doe.jpg",
   }
 

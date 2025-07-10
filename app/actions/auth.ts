@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { hash } from "bcrypt";
 import { revalidatePath } from "next/cache";
+import { clearTokenCookies } from "@/lib/jwt";
+import { redirect } from "next/navigation";
 
 export async function registerUser(formData: {
   firstName: string;
@@ -69,4 +71,20 @@ export async function registerUser(formData: {
     console.error("❌ Error during registration process:", error);
     return { success: false, message: "خطا در ثبت نام. لطفا دوباره تلاش کنید" };
   }
+} 
+
+export async function logout() {
+  try {
+    // Clear authentication cookies
+    await clearTokenCookies();
+    
+    // Revalidate any cached data
+    revalidatePath("/");
+  } catch (error) {
+    console.error("❌ Error during logout:", error);
+    throw new Error("خطا در خروج از سیستم");
+  }
+  
+  // Redirect to login page (this should be outside try-catch)
+  redirect("/login");
 } 
