@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { registerUser } from "@/app/actions/auth"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 import {
   Dialog,
@@ -57,6 +58,7 @@ type SignUpDialogProps = {
 }
 
 export function SignUpDialog({ open, onOpenChange }: SignUpDialogProps) {
+  const router = useRouter()
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
@@ -86,13 +88,40 @@ export function SignUpDialog({ open, onOpenChange }: SignUpDialogProps) {
 
       if (result.success) {
         toast.success(result.message)
+
+        const loginResponse = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: data.email,
+            password: data.password,
+          }),
+        })
+
+        const loginData = await loginResponse.json()
+
+        if (!loginResponse.ok) {
+          throw new Error(loginData.error || "خطا در ورود خودکار")
+        }
+
+        if (loginData.user?.companyId) {
+          router.push(`/dashboard/${loginData.user.companyId}/work-orders`)
+        } else {
+          console.error(
+            "No company ID found in login response after sign up",
+            loginData
+          )
+          toast.error("خطا در دریافت اطلاعات شرکت")
+        }
         onOpenChange(false)
         form.reset()
       } else {
         toast.error(result.message)
       }
-    } catch (error) {
-      toast.error("خطا در ثبت نام. لطفا دوباره تلاش کنید")
+    } catch (error: any) {
+      toast.error(error.message || "خطا در ثبت نام. لطفا دوباره تلاش کنید")
       console.error(error)
     } finally {
       setIsSubmitting(false)

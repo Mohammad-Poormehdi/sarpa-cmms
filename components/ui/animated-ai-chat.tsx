@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as React from "react"
+import ReactMarkdown from "react-markdown";
 
 interface UseAutoResizeTextareaProps {
     minHeight: number;
@@ -149,6 +150,7 @@ export function AnimatedAIChat() {
     });
     const [inputFocused, setInputFocused] = useState(false);
     const commandPaletteRef = useRef<HTMLDivElement>(null);
+    const [messages, setMessages] = useState<{ role: 'user' | 'ai', content: string }[]>([]);
 
     const commandSuggestions: CommandSuggestion[] = [
         { 
@@ -258,16 +260,21 @@ export function AnimatedAIChat() {
         }
     };
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (value.trim()) {
-            startTransition(() => {
-                setIsTyping(true);
-                setTimeout(() => {
-                    setIsTyping(false);
-                    setValue("");
-                    adjustHeight(true);
-                }, 3000);
-            });
+            setMessages((prev) => [...prev, { role: 'user', content: value }]);
+            setIsTyping(true);
+            const userMessage = value;
+            setValue("");
+            adjustHeight(true);
+            try {
+                const { sendAIMessage } = await import("@/app/actions/ai-chat");
+                const res = await sendAIMessage(userMessage);
+                setMessages((prev) => [...prev, { role: 'ai', content: res.output }]);
+            } catch (e) {
+                setMessages((prev) => [...prev, { role: 'ai', content: 'خطا در دریافت پاسخ از سرور.' }]);
+            }
+            setIsTyping(false);
         }
     };
 
@@ -518,6 +525,23 @@ export function AnimatedAIChat() {
                                     }}
                                 />
                             </motion.button>
+                        ))}
+                    </div>
+
+                    <div className="flex flex-col gap-2 px-4 pb-2">
+                        {messages.map((msg, idx) => (
+                            <div key={idx} dir="rtl" className={cn(
+                                "rounded-lg px-3 py-2 text-sm",
+                                msg.role === 'user' ? "bg-violet-500/10 text-right self-end" : "bg-white/10 text-left self-start"
+                            )}>
+                                {msg.role === 'ai' ? (
+                                    <div dir="rtl">
+                                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                    </div>
+                                ) : (
+                                    msg.content
+                                )}
+                            </div>
                         ))}
                     </div>
                 </motion.div>

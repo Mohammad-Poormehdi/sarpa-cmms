@@ -23,32 +23,52 @@ export async function middleware(request: NextRequest) {
   
   // Get the token from cookies
   const accessToken = request.cookies.get('access_token')?.value
+  const refreshToken = request.cookies.get('refresh_token')?.value
   
-  // If the user is accessing a protected path but doesn't have a token
-  if (isProtectedPath(path) && !accessToken) {
-    // Redirect to login page
-    const redirectUrl = new URL('/login', request.url)
-    return NextResponse.redirect(redirectUrl)
-  }
-  
-  // If user has a token
-  if (accessToken) {
-    try {
-      // Verify the token
-      const payload = await verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET || 'access-token-secret')
-      
-      // If the token is valid and user is trying to access login/register pages
-      if (payload && isAuthPath(path)) {
-        // Redirect authenticated users away from login/register pages
-        const redirectUrl = new URL('/account', request.url)
-        return NextResponse.redirect(redirectUrl)
-      }
-    } catch (error) {
-      // If token verification fails for protected routes, redirect to login
-      if (isProtectedPath(path)) {
+  // If the user is accessing a protected path
+  if (isProtectedPath(path)) {
+    // If no access token, check if refresh token exists
+    if (!accessToken) {
+      // If no refresh token either, redirect to login
+      if (!refreshToken) {
         const redirectUrl = new URL('/login', request.url)
         return NextResponse.redirect(redirectUrl)
       }
+      
+      // If refresh token exists but no access token, redirect to login
+      // The client should handle the refresh process
+      const redirectUrl = new URL('/login', request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+    
+    // Verify the access token
+    try {
+      const payload = await verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET || 'access-token-secret')
+      
+      // If token is invalid, redirect to login
+      if (!payload) {
+        const redirectUrl = new URL('/login', request.url)
+        return NextResponse.redirect(redirectUrl)
+      }
+    } catch (error) {
+      // If token verification fails, redirect to login
+      const redirectUrl = new URL('/login', request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+  }
+  
+  // If user has a valid token and is trying to access auth pages
+  if (accessToken && isAuthPath(path)) {
+    try {
+      const payload = await verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET || 'access-token-secret')
+      
+      if (payload) {
+        // Redirect authenticated users to dashboard
+        const redirectUrl = new URL('/dashboard', request.url)
+        return NextResponse.redirect(redirectUrl)
+      }
+    } catch (error) {
+      // Token is invalid, allow access to auth pages
     }
   }
   
@@ -57,5 +77,14 @@ export async function middleware(request: NextRequest) {
 
 // Configure the middleware to run only on specific paths
 export const config = {
-  matcher: ['/account', '/dashboard', '/login', '/register'],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)  
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 } 

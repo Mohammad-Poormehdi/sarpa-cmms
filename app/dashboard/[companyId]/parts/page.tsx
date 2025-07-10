@@ -69,34 +69,53 @@ export default async function PartsPage({
         </Link>
       </div>
 
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex flex-1 items-center gap-2">
-          <Input
-            placeholder="جستجو..."
-            className="max-w-[250px]"
-            name="search"
-          />
-          <Button variant="ghost" className={cn("h-8 px-2 lg:px-3")}>
-            جستجو
-          </Button>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select defaultValue="all">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="وضعیت" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">همه</SelectItem>
-              <SelectItem value="critical">قطعات حیاتی</SelectItem>
-              <SelectItem value="noneStock">قطعات غیر موجودی</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      {parts.length > 0 ? (
+        <>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-1 items-center gap-2">
+              <Input
+                placeholder="جستجو..."
+                className="max-w-[250px]"
+                name="search"
+              />
+              <Button variant="ghost" className={cn("h-8 px-2 lg:px-3")}>
+                جستجو
+              </Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <Select defaultValue="all">
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="وضعیت" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">همه</SelectItem>
+                  <SelectItem value="critical">قطعات حیاتی</SelectItem>
+                  <SelectItem value="noneStock">قطعات غیر موجودی</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-      <Suspense fallback={<div>در حال بارگذاری...</div>}>
-        <PartsTable parts={parts} companyId={params.companyId} />
-      </Suspense>
+          <Suspense fallback={<div>در حال بارگذاری...</div>}>
+            <PartsTable parts={parts} companyId={params.companyId} />
+          </Suspense>
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center min-h-[400px] border rounded-lg bg-background">
+          <div className="p-4 rounded-full bg-muted">
+            <ClipboardList className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h3 className="mt-4 text-lg font-medium">هیچ قطعه ای وجود ندارد</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            برای شروع، یک قطعه جدید اضافه کنید.
+          </p>
+          <Link href={`/dashboard/${params.companyId}/parts/new`}>
+            <Button className="mt-4" variant="outline">
+              قطعه جدید
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   )
 }

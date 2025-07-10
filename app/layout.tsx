@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { iranYekanX, iranYekanXFaNum } from "./fonts";
 import { ToasterProvider } from "@/components/providers/toaster-provider";
+import { StagewiseProvider } from "@/components/providers/stagewise-provider";
 
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default function RootLayout({
           <ToasterProvider />
           {children}
         </ThemeProvider>
+        <StagewiseProvider />
       </body>
     </html>
   );

@@ -1,5 +1,6 @@
 import { Suspense } from "react"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -44,6 +45,10 @@ export default async function AssetsPage({
 }) {
   const user = await isAuthenticated();
   
+  if (!user) {
+    redirect("/login")
+  }
+  
   if (user.companyId !== params.companyId) {
     throw new Error("غیر مجاز");
   }
@@ -67,34 +72,49 @@ export default async function AssetsPage({
         </Link>
       </div>
 
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex flex-1 items-center gap-2">
-          <Input
-            placeholder="جستجو..."
-            className="max-w-[250px]"
-            name="search"
-          />
-          <Button variant="ghost" className={cn("h-8 px-2 lg:px-3")}>
-            جستجو
-          </Button>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select defaultValue="all">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="وضعیت" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">همه</SelectItem>
-              <SelectItem value="active">فعال</SelectItem>
-              <SelectItem value="inactive">غیرفعال</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      {assets.length > 0 ? (
+        <>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-1 items-center gap-2">
+              <Input
+                placeholder="جستجو..."
+                className="max-w-[250px]"
+                name="search"
+              />
+              <Button variant="ghost" className={cn("h-8 px-2 lg:px-3")}>
+                جستجو
+              </Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <Select defaultValue="all">
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="وضعیت" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">همه</SelectItem>
+                  <SelectItem value="active">فعال</SelectItem>
+                  <SelectItem value="inactive">غیرفعال</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-      <Suspense fallback={<div>در حال بارگذاری...</div>}>
-        <AssetsTable assets={assets} companyId={params.companyId} />
-      </Suspense>
+          <Suspense fallback={<div>در حال بارگذاری...</div>}>
+            <AssetsTable assets={assets} companyId={params.companyId} />
+          </Suspense>
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center min-h-[400px] border rounded-lg bg-background">
+          <div className="p-4 rounded-full bg-muted">
+            <ClipboardList className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h3 className="mt-4 text-lg font-medium">هیچ تجهیزی وجود ندارد</h3>
+          <p className="mt-2 text-sm text-muted-foreground">برای شروع، یک تجهیز جدید اضافه کنید.</p>
+          <Link href={`/dashboard/${params.companyId}/assets/new`}>
+            <Button className="mt-4" variant="outline">تجهیز جدید</Button>
+          </Link>
+        </div>
+      )}
     </div>
   )
 } 

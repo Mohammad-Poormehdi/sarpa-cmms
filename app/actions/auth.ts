@@ -60,7 +60,11 @@ export async function registerUser(formData: {
 
     revalidatePath("/");
     console.log("🎉 Registration completed successfully");
-    return { success: true, message: "ثبت نام با موفقیت انجام شد" };
+    return {
+      success: true,
+      message: "ثبت نام با موفقیت انجام شد",
+      companyId: company.id,
+    };
   } catch (error) {
     console.error("❌ Error during registration process:", error);
     return { success: false, message: "خطا در ثبت نام. لطفا دوباره تلاش کنید" };

@@ -41,7 +41,8 @@ export async function refreshAccessToken(): Promise<boolean> {
 }
 
 /**
- * Checks if the user is authenticated
+ * Checks if the user is authenticated (for Server Components)
+ * Only verifies tokens without attempting to refresh them
  * Returns the user payload if authenticated, null otherwise
  */
 export async function isAuthenticated() {
@@ -51,7 +52,35 @@ export async function isAuthenticated() {
     
     // If no access token, not authenticated
     if (!accessToken) {
-      // Try to refresh the token
+      return null
+    }
+    
+    // Verify access token
+    const payload = await verifyToken(accessToken, ACCESS_TOKEN_SECRET)
+    
+    // If token is invalid, return null (don't try to refresh in Server Components)
+    if (!payload) {
+      return null
+    }
+    
+    return payload as any
+  } catch (error) {
+    console.error('Error checking authentication:', error)
+    return null
+  }
+}
+
+/**
+ * Checks if the user is authenticated and attempts to refresh tokens if needed
+ * Only use this in Server Actions or Route Handlers where cookies can be modified
+ */
+export async function isAuthenticatedWithRefresh() {
+  try {
+    // Get tokens from cookies
+    const { accessToken } = await getTokens()
+    
+    // If no access token, try to refresh
+    if (!accessToken) {
       const refreshed = await refreshAccessToken()
       if (!refreshed) {
         return null

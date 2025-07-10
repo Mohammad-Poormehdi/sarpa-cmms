@@ -100,9 +100,9 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
     },
     {
       title: "قطعات و انبار",
-      url: `/dashboard/${companyId}/inventory`,
+      url: `/dashboard/${companyId}/parts`,
       icon: ShoppingCart,
-      isActive: pathname.includes(`/dashboard/${companyId}/inventory`),
+      isActive: pathname.includes(`/dashboard/${companyId}/parts`),
     },
     {
       title: "تحلیل‌ها",
@@ -130,12 +130,6 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
         />
       ),
       isActive: pathname.includes(`/dashboard/${companyId}/ai`),
-    },
-    {
-      title: "درخواست‌ها",
-      url: `/dashboard/${companyId}/requests`,
-      icon: MessageSquare,
-      isActive: pathname.includes(`/dashboard/${companyId}/requests`),
     },
   ]
 
