@@ -59,12 +59,12 @@ export function PreventiveMaintenanceTable({
                 <span
                   className={`px-2 py-1 rounded-full text-xs ${
                     maintenance.status === "pending"
-                      ? "bg-yellow-100 text-yellow-800"
+                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
                       : maintenance.status === "in-progress"
-                      ? "bg-slate-100 text-slate-800"
+                      ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
                       : maintenance.status === "completed"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
                   }`}
                 >
                   {maintenance.status === "pending"
@@ -93,10 +93,10 @@ export function PreventiveMaintenanceTable({
                   : "پس از تکمیل"}
               </TableCell>
               <TableCell>
-                {format(new Date(maintenance.startDate), "yyyy/MM/dd")}
+                {format(new Date(maintenance.startDate), "dd MMMM yyyy")}
               </TableCell>
               <TableCell>
-                {format(new Date(maintenance.nextDueDate), "yyyy/MM/dd")}
+                {format(new Date(maintenance.nextDueDate), "dd MMMM yyyy")}
               </TableCell>
               <TableCell>
                 <Link href={`/dashboard/${companyId}/preventive-maintenance/${maintenance.id}`} className="text-primary hover:underline">

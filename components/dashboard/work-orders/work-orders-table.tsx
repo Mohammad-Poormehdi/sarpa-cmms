@@ -20,10 +20,10 @@ const priorityLabels: Record<WorkOrderPriority, string> = {
 };
 
 const priorityColors: Record<WorkOrderPriority, string> = {
-  none: "bg-gray-100 text-gray-800",
-  low: "bg-blue-100 text-blue-800",
-  medium: "bg-yellow-100 text-yellow-800",
-  high: "bg-red-100 text-red-800",
+  none: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+  low: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  medium: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+  high: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
 };
 
 const statusLabels: Record<WorkOrderStatus, string> = {
@@ -34,10 +34,10 @@ const statusLabels: Record<WorkOrderStatus, string> = {
 };
 
 const statusColors: Record<WorkOrderStatus, string> = {
-  pending: "bg-yellow-100 text-yellow-800",
-  inProgress: "bg-blue-100 text-blue-800",
-  completed: "bg-green-100 text-green-800",
-  cancelled: "bg-gray-100 text-gray-800",
+  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+  inProgress: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  completed: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+  cancelled: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
 };
 
 type WorkOrdersTableProps = {

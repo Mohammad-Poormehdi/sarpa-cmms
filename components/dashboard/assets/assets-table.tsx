@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
+import { Edit } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -38,7 +39,7 @@ export function AssetsTable({
             <TableHead>کاربر مسئول</TableHead>
             <TableHead>تاریخ خرید</TableHead>
             <TableHead>قیمت خرید</TableHead>
-            <TableHead>عملیات</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -85,9 +86,9 @@ export function AssetsTable({
               <TableCell>
                 <Link 
                   href={`/dashboard/${companyId}/assets/${asset.id}`}
-                  className="text-xs text-primary hover:underline"
+                  className="text-primary hover:text-primary/80 transition-colors"
                 >
-                  مشاهده / ویرایش
+                  <Edit className="h-4 w-4" />
                 </Link>
               </TableCell>
             </TableRow>

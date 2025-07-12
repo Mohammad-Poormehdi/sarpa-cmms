@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    const companyId = "cmae96vlh000crps8ze1pj1lg";
+    const companyId = "cmcyta77e0000rpjo7k0gf82i";
 
     // First, verify the company exists
     const existingCompany = await prisma.company.findUnique({
@@ -18,6 +18,9 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
+
+    // Generate unique timestamp for this seed run
+    const timestamp = Date.now();
 
     // Create Manufacturers
     const manufacturers = await Promise.all([
@@ -48,6 +51,27 @@ export async function POST(request: NextRequest) {
           description: "تولیدکننده مبدل‌های حرارتی و تجهیزات جداسازی",
           companyId
         }
+      }),
+      prisma.manufacturer.create({
+        data: {
+          name: "Emerson",
+          description: "تولیدکننده تجهیزات اتوماسیون و ابزار دقیق",
+          companyId
+        }
+      }),
+      prisma.manufacturer.create({
+        data: {
+          name: "ABB",
+          description: "تولیدکننده تجهیزات برق و اتوماسیون صنعتی",
+          companyId
+        }
+      }),
+      prisma.manufacturer.create({
+        data: {
+          name: "Schneider Electric",
+          description: "تولیدکننده تجهیزات مدیریت انرژی و اتوماسیون",
+          companyId
+        }
       })
     ]);
 
@@ -56,7 +80,7 @@ export async function POST(request: NextRequest) {
       prisma.user.create({
         data: {
           name: "علی احمدی",
-          email: "a.ahmadi@petrocompany.com",
+          email: `a.ahmadi_${timestamp}@petrocompany.com`,
           password: "hashed_password_1",
           companyId
         }
@@ -64,7 +88,7 @@ export async function POST(request: NextRequest) {
       prisma.user.create({
         data: {
           name: "محمد رضایی",
-          email: "m.rezaei@petrocompany.com",
+          email: `m.rezaei_${timestamp}@petrocompany.com`,
           password: "hashed_password_2",
           companyId
         }
@@ -72,7 +96,7 @@ export async function POST(request: NextRequest) {
       prisma.user.create({
         data: {
           name: "فاطمه کریمی",
-          email: "f.karimi@petrocompany.com",
+          email: `f.karimi_${timestamp}@petrocompany.com`,
           password: "hashed_password_3",
           companyId
         }
@@ -80,8 +104,24 @@ export async function POST(request: NextRequest) {
       prisma.user.create({
         data: {
           name: "حسن محمودی",
-          email: "h.mahmoudi@petrocompany.com",
+          email: `h.mahmoudi_${timestamp}@petrocompany.com`,
           password: "hashed_password_4",
+          companyId
+        }
+      }),
+      prisma.user.create({
+        data: {
+          name: "سارا زمانی",
+          email: `s.zamani_${timestamp}@petrocompany.com`,
+          password: "hashed_password_5",
+          companyId
+        }
+      }),
+      prisma.user.create({
+        data: {
+          name: "رضا قاسمی",
+          email: `r.ghasemi_${timestamp}@petrocompany.com`,
+          password: "hashed_password_6",
           companyId
         }
       })
@@ -187,6 +227,65 @@ export async function POST(request: NextRequest) {
           companyId,
           workerId: users[0].id
         }
+      }),
+      prisma.asset.create({
+        data: {
+          name: "کوره حرارتی F-601",
+          description: "کوره اصلی فرآیند کراکینگ حرارتی",
+          model: "EMERSON FIRED HEATER H-10",
+          serialNumber: "EM2024006",
+          barcode: "FUR-601-2024",
+          purchasePrice: 1800000000,
+          purchaseDate: new Date("2022-11-01"),
+          residualValue: 180000000,
+          usefulLife: 30,
+          usefulLifeUnit: "year",
+          placedInServiceDate: new Date("2023-02-01"),
+          warrantyExpirationDate: new Date("2025-02-01"),
+          additionalInformation: "ظرفیت حرارتی 50 میلیون BTU/hr",
+          companyId,
+          manufacturerId: manufacturers[4].id, // Emerson
+          workerId: users[4].id // سارا زمانی
+        }
+      }),
+      prisma.asset.create({
+        data: {
+          name: "راکتور پلیمریزاسیون R-701",
+          description: "راکتور اصلی تولید پلی‌اتیلن",
+          model: "ABB STIRRED TANK REACTOR R-500",
+          serialNumber: "AB2024007",
+          barcode: "RCT-701-2024",
+          purchasePrice: 2000000000,
+          purchaseDate: new Date("2022-10-10"),
+          residualValue: 200000000,
+          usefulLife: 20,
+          usefulLifeUnit: "year",
+          placedInServiceDate: new Date("2023-03-20"),
+          warrantyExpirationDate: new Date("2026-03-20"),
+          additionalInformation: "حجم 100 متر مکعب، فشار کاری 25 بار",
+          companyId,
+          manufacturerId: manufacturers[5].id, // ABB
+          workerId: users[5].id // رضا قاسمی
+        }
+      }),
+      prisma.asset.create({
+        data: {
+          name: "مخزن ذخیره متانول TK-801",
+          description: "مخزن ذخیره متانول با سقف شناور",
+          model: "CUSTOM STORAGE TANK",
+          serialNumber: "TK2024008",
+          barcode: "TNK-801-2024",
+          purchasePrice: 750000000,
+          purchaseDate: new Date("2023-07-01"),
+          residualValue: 75000000,
+          usefulLife: 25,
+          usefulLifeUnit: "year",
+          placedInServiceDate: new Date("2023-09-01"),
+          warrantyExpirationDate: new Date("2025-09-01"),
+          additionalInformation: "ظرفیت 5000 متر مکعب",
+          companyId,
+          workerId: users[1].id // محمد رضایی
+        }
       })
     ]);
 
@@ -257,6 +356,48 @@ export async function POST(request: NextRequest) {
           isCritical: true,
           additionalInformation: "فشار کاری تا 16 بار",
           companyId
+        }
+      }),
+      prisma.part.create({
+        data: {
+          name: "مشعل کوره",
+          partNumber: "BURNER-FH-H10",
+          description: "مشعل گازسوز برای کوره امرسون",
+          minimumQuantity: 1,
+          isCritical: true,
+          additionalInformation: "ظرفیت حرارتی 10 میلیون BTU/hr",
+          companyId,
+          assets: {
+            connect: [{ id: assets[5].id }] // F-601
+          }
+        }
+      }),
+      prisma.part.create({
+        data: {
+          name: "موتور همزن راکتور",
+          partNumber: "MOTOR-STR-R500",
+          description: "موتور الکتریکی 75 کیلووات برای همزن راکتور ABB",
+          minimumQuantity: 1,
+          isCritical: true,
+          additionalInformation: "ولتاژ: 400 ولت، سرعت: 1500 RPM",
+          companyId,
+          assets: {
+            connect: [{ id: assets[6].id }] // R-701
+          }
+        }
+      }),
+      prisma.part.create({
+        data: {
+          name: "سنسور سطح مخزن",
+          partNumber: "LEVEL-SENSOR-TK",
+          description: "سنسور سطح راداری برای مخزن ذخیره",
+          minimumQuantity: 2,
+          isCritical: false,
+          additionalInformation: "برند: Schneider Electric",
+          companyId,
+          assets: {
+            connect: [{ id: assets[7].id }] // TK-801
+          }
         }
       })
     ]);
@@ -357,6 +498,63 @@ export async function POST(request: NextRequest) {
           assetId: assets[4].id,
           companyId
         }
+      }),
+      prisma.preventiveMaintenance.create({
+        data: {
+          title: "بازرسی و نگهداری کوره F-601",
+          description: "بازرسی مشعل‌ها، چک کردن نسوزها، تمیزکاری لوله‌ها",
+          scheduleType: "regularInterval",
+          frequency: 6,
+          timeUnit: "month",
+          createWOsDaysBeforeDue: 15,
+          workOrderTitle: "نگهداری شش‌ماهه کوره F-601",
+          workOrderDescription: "انجام بازرسی و نگهداری دوره‌ای کوره حرارتی",
+          workOrderPriority: "high",
+          startDate: new Date("2024-01-01"),
+          nextDueDate: new Date("2024-07-01"),
+          createdById: users[4].id, // سارا زمانی
+          assignedToId: users[5].id, // رضا قاسمی
+          assetId: assets[5].id, // F-601
+          companyId
+        }
+      }),
+      prisma.preventiveMaintenance.create({
+        data: {
+          title: "بازرسی راکتور R-701",
+          description: "بررسی سیستم همزن، کنترل دمای راکتور، بازرسی آب‌بندها",
+          scheduleType: "regularInterval",
+          frequency: 4,
+          timeUnit: "month",
+          createWOsDaysBeforeDue: 10,
+          workOrderTitle: "نگهداری چهارماهه راکتور R-701",
+          workOrderDescription: "انجام بازرسی‌های دوره‌ای راکتور پلیمریزاسیون",
+          workOrderPriority: "high",
+          startDate: new Date("2024-01-01"),
+          nextDueDate: new Date("2024-05-01"),
+          createdById: users[5].id, // رضا قاسمی
+          assignedToId: users[4].id, // سارا زمانی
+          assetId: assets[6].id, // R-701
+          companyId
+        }
+      }),
+      prisma.preventiveMaintenance.create({
+        data: {
+          title: "بازرسی مخزن ذخیره TK-801",
+          description: "بازرسی ضخامت بدنه، کنترل سقف شناور، تست سیستم اطفاء حریق",
+          scheduleType: "regularInterval",
+          frequency: 2,
+          timeUnit: "year",
+          createWOsDaysBeforeDue: 30,
+          workOrderTitle: "بازرسی دوسالانه مخزن TK-801",
+          workOrderDescription: "انجام بازرسی جامع مخزن ذخیره متانول",
+          workOrderPriority: "medium",
+          startDate: new Date("2024-01-01"),
+          nextDueDate: new Date("2026-01-01"),
+          createdById: users[1].id, // محمد رضایی
+          assignedToId: users[3].id, // حسن محمودی
+          assetId: assets[7].id, // TK-801
+          companyId
+        }
       })
     ]);
 
@@ -398,6 +596,32 @@ export async function POST(request: NextRequest) {
           preventiveMaintenanceId: preventiveMaintenances[2].id,
           assignedToId: users[3].id,
           assetId: assets[2].id,
+          companyId
+        }
+      }),
+      prisma.workOrder.create({
+        data: {
+          title: "تعمیر اضطراری مشعل کوره F-601",
+          description: "مشعل شماره 3 از کار افتاده است، نیاز به تعویض فوری دارد",
+          status: "pending",
+          priority: "high",
+          dueDate: new Date("2024-03-10"),
+          preventiveMaintenanceId: preventiveMaintenances[5].id,
+          assignedToId: users[4].id, // سارا زمانی
+          assetId: assets[5].id, // F-601
+          companyId
+        }
+      }),
+      prisma.workOrder.create({
+        data: {
+          title: "بازرسی سیستم خنک‌کننده راکتور R-701",
+          description: "دمای راکتور بالاتر از حد مجاز است، سیستم خنک‌کننده بررسی شود",
+          status: "inProgress",
+          priority: "high",
+          dueDate: new Date("2024-03-05"),
+          preventiveMaintenanceId: preventiveMaintenances[6].id,
+          assignedToId: users[5].id, // رضا قاسمی
+          assetId: assets[6].id, // R-701
           companyId
         }
       })

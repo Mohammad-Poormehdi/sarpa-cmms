@@ -284,8 +284,8 @@ export function T3Chat({ className }: T3ChatProps) {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-border p-4">
-        <div className="max-w-2xl mx-auto">
+      <div className="border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4">
+        <div className="max-w-xl mx-auto">
           {/* Main Input Container */}
           <div className="relative">
             <Textarea
@@ -294,7 +294,7 @@ export function T3Chat({ className }: T3ChatProps) {
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder="پیام خود را اینجا بنویسید..."
-              className="min-h-[80px] max-h-[250px] resize-none bg-card border-border focus:border-primary/50 text-foreground placeholder-muted-foreground rounded-xl pr-4 pl-12"
+              className="min-h-[120px] max-h-[300px] resize-none bg-card border-border focus:border-primary/50 text-foreground placeholder-muted-foreground rounded-xl pr-4 pl-12"
               disabled={isTyping}
             />
             
